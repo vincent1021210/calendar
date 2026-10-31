@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>日曆</title>
+  <meta name="description" content="獨立日曆：登入後管理個人與群組行程。">
+  <meta name="theme-color" content="#2563eb">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%232563eb'/><text x='16' y='22' font-size='16' font-family='sans-serif' font-weight='700' fill='white' text-anchor='middle'>日</text></svg>">
+  <link rel="preconnect" href="https://script.google.com" crossorigin>
+  <link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=add,badge,calendar_month,chevron_left,chevron_right,delete_sweep,edit_square,error,key,lock,lock_reset,login,logout,mail,person_add,pin,visibility,visibility_off&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261031a">
+  <link rel="stylesheet" href="assets/css/standalone.css?v=20261031a">
+</head>
+<body class="cal-site-body">
+  <div id="loading" class="loading-veil">
+    <div class="spinner" role="status" aria-label="載入中"></div>
+  </div>
+
+  <section id="auth" class="auth hidden">
+    <aside class="auth-brand">
+      <div class="auth-logo">
+        <span class="material-symbols-outlined" aria-hidden="true">calendar_month</span>
+        <div>
+          <h1>日曆</h1>
+          <span>行程與提醒</span>
+        </div>
+      </div>
+      <div class="auth-pitch">
+        <h2>你的獨立日曆</h2>
+        <p>用同一個帳號登入，管理個人行程，也可以分享到群組。</p>
+      </div>
+    </aside>
+
+    <main class="auth-main">
+      <div class="auth-card card">
+        <div id="login-panel">
+          <div class="auth-mark"><span class="material-symbols-outlined">login</span></div>
+          <h2 class="auth-title">登入日曆</h2>
+          <p class="auth-sub">使用 Google 或帳號密碼（與 PATS 同一組帳號）</p>
+          <div id="google-slot" class="google-slot"></div>
+          <div class="auth-divider">或使用帳號密碼</div>
+          <form id="login-form" class="auth-form" autocomplete="on">
+            <div id="login-error" class="form-error hidden">
+              <span class="material-symbols-outlined">error</span>
+              <span data-role="text"></span>
+            </div>
+            <div class="field">
+              <label class="field-label" for="login-account"><strong>電子郵件 / 帳號</strong></label>
+              <div class="input-wrap">
+                <span class="material-symbols-outlined">mail</span>
+                <input id="login-account" name="account" type="text" autocomplete="username" required>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label" for="login-password">
+                <strong>密碼</strong>
+                <a href="#" id="forgot-link">忘記密碼？</a>
+              </label>
+              <div class="input-wrap">
+                <span class="material-symbols-outlined">lock</span>
+                <input id="login-password" name="password" type="password" autocomplete="current-password" required>
+                <button type="button" class="icon-btn" data-toggle-password="login-password" aria-label="顯示密碼">
+                  <span class="material-symbols-outlined">visibility_off</span>
+                </button>
+              </div>
+            </div>
+            <label class="checkbox">
+              <input id="login-remember" type="checkbox">
+              <span>保持登入狀態</span>
+            </label>
+            <button id="login-submit" type="submit" class="btn btn-primary btn-block">登入</button>
+          </form>
+          <p class="auth-footer">還沒有帳號？ <a href="#" id="go-register">立即註冊</a></p>
+        </div>
+
+        <div id="register-panel" class="hidden">
+          <div class="auth-mark"><span class="material-symbols-outlined">person_add</span></div>
+          <h2 class="auth-title">建立帳號</h2>
+          <p class="auth-sub" id="register-sub">使用 Google 或填寫資料</p>
+          <div id="google-slot-register" class="google-slot"></div>
+          <div class="auth-divider" id="register-divider">或自行填寫資料</div>
+          <ol class="steps" id="register-steps">
+            <li class="step is-active" data-step="1"><span>1</span>填寫資料</li>
+            <li class="step" data-step="2"><span>2</span>驗證信箱</li>
+          </ol>
+          <div id="register-error" class="form-error hidden">
+            <span class="material-symbols-outlined">error</span>
+            <span data-role="text"></span>
+          </div>
+          <form id="register-form" class="auth-form" autocomplete="on">
+            <div class="field">
+              <label class="field-label" for="register-name"><strong>顯示名稱</strong></label>
+              <div class="input-wrap">
+                <span class="material-symbols-outlined">badge</span>
+                <input id="register-name" type="text" maxlength="40" required>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label" for="register-email"><strong>電子郵件</strong></label>
+              <div class="input-wrap">
+                <span class="material-symbols-outlined">mail</span>
+                <input id="register-email" type="email" autocomplete="email" required>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label" for="register-password"><strong>密碼</strong></label>
+              <div class="input-wrap">
+                <span class="material-symbols-outlined">lock</span>
+                <input id="register-password" type="password" autocomplete="new-password" required>
+                <button type="button" class="icon-btn" data-toggle-password="register-password" aria-label="顯示密碼">
+                  <span class="material-symbols-outlined">visibility_off</span>
+                </button>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label" for="register-confirm"><strong>確認密碼</strong></label>
+              <div class="input-wrap">
+                <span class="material-symbols-outlined">lock_reset</span>
+                <input id="register-confirm" type="password" autocomplete="new-password" required>
+              </div>
+            </div>
+            <div class="field hidden" id="invite-field">
+              <label class="field-label" for="register-invite"><strong>邀請碼</strong></label>
+              <div class="input-wrap">
+                <span class="material-symbols-outlined">key</span>
+                <input id="register-invite" type="text">
+              </div>
+            </div>
+            <button id="register-submit" type="submit" class="btn btn-primary btn-block">寄送驗證碼</button>
+          </form>
+          <form id="register-verify-form" class="auth-form hidden">
+            <div class="field">
+              <label class="field-label" for="register-code"><strong>驗證碼</strong></label>
+              <div class="input-wrap">
+                <span class="material-symbols-outlined">pin</span>
+                <input id="register-code" type="text" inputmode="numeric" maxlength="6" class="code-input" required>
+              </div>
+            </div>
+            <button id="register-verify-submit" type="submit" class="btn btn-primary btn-block">完成註冊</button>
+            <button id="register-resend" type="button" class="btn btn-ghost btn-block">沒收到？重新寄送</button>
+            <button id="register-back" type="button" class="btn btn-quiet btn-block">上一步</button>
+          </form>
+          <p class="auth-footer">已經有帳號了？ <a href="#" id="go-login">返回登入</a></p>
+        </div>
+
+        <div id="reset-panel" class="hidden">
+          <div class="auth-mark"><span class="material-symbols-outlined">lock_reset</span></div>
+          <h2 class="auth-title">重設密碼</h2>
+          <p class="auth-sub" id="reset-sub">輸入電子郵件，我們會寄驗證碼</p>
+          <ol class="steps" id="reset-steps">
+            <li class="step is-active" data-step="1"><span>1</span>驗證信箱</li>
+            <li class="step" data-step="2"><span>2</span>輸入驗證碼</li>
+            <li class="step" data-step="3"><span>3</span>設定新密碼</li>
+          </ol>
+          <div id="reset-error" class="form-error hidden">
+            <span class="material-symbols-outlined">error</span>
+            <span data-role="text"></span>
+          </div>
+          <form id="reset-email-form" class="auth-form">
+            <div class="field">
+              <label class="field-label" for="reset-email"><strong>電子郵件</strong></label>
+              <div class="input-wrap">
+                <span class="material-symbols-outlined">mail</span>
+                <input id="reset-email" type="email" required>
+              </div>
+            </div>
+            <button id="reset-email-submit" type="submit" class="btn btn-primary btn-block">寄送驗證碼</button>
+          </form>
+          <form id="reset-code-form" class="auth-form hidden">
+            <div class="field">
+              <label class="field-label" for="reset-code"><strong>驗證碼</strong></label>
+              <div class="input-wrap">
+                <span class="material-symbols-outlined">pin</span>
+                <input id="reset-code" type="text" inputmode="numeric" maxlength="6" class="code-input" required>
+              </div>
+            </div>
+            <button id="reset-code-submit" type="submit" class="btn btn-primary btn-block">驗證</button>
+            <button id="reset-resend" type="button" class="btn btn-ghost btn-block">重新寄送</button>
+          </form>
+          <form id="reset-password-form" class="auth-form hidden">
+            <div class="field">
+              <label class="field-label" for="reset-new"><strong>新密碼</strong></label>
+              <div class="input-wrap">
+                <span class="material-symbols-outlined">lock</span>
+                <input id="reset-new" type="password" autocomplete="new-password" required>
+                <button type="button" class="icon-btn" data-toggle-password="reset-new" aria-label="顯示密碼">
+                  <span class="material-symbols-outlined">visibility_off</span>
+                </button>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label" for="reset-confirm"><strong>確認新密碼</strong></label>
+              <div class="input-wrap">
+                <span class="material-symbols-outlined">lock_reset</span>
+                <input id="reset-confirm" type="password" autocomplete="new-password" required>
+              </div>
+            </div>
+            <button id="reset-password-submit" type="submit" class="btn btn-primary btn-block">更新密碼並登入</button>
+          </form>
+          <p class="auth-footer"><a href="#" id="reset-back">返回登入</a></p>
+        </div>
+      </div>
+    </main>
+  </section>
+
+  <div id="app" class="cal-site hidden">
+    <header class="cal-site-bar">
+      <div class="cal-site-brand">
+        <span class="material-symbols-outlined">calendar_month</span>
+        <span>日曆</span>
+      </div>
+      <div class="cal-site-user">
+        <span id="me-name"></span>
+        <button type="button" class="btn btn-ghost" id="logout-btn">登出</button>
+      </div>
+    </header>
+    <section class="settings-pane calendar-pane scroll-y" id="calendar-pane"></section>
+  </div>
+
+  <div id="modal-root"></div>
+  <div id="menu-root"></div>
+  <div class="toast-stack" id="toast-root"></div>
+
+  <script defer src="assets/js/config.js?v=20261031a"></script>
+  <script defer src="assets/js/core.js?v=20261031a"></script>
+  <script defer src="assets/js/auth.js?v=20261031a"></script>
+  <script defer src="assets/js/calendar.js?v=20261031a"></script>
+  <script defer src="assets/js/boot.js?v=20261031a"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      var btn = document.getElementById('logout-btn');
+      if (btn) btn.addEventListener('click', function () {
+        if (window.PatsAuth) PatsAuth.logout({ relogin: true });
+      });
+    });
+  </script>
+</body>
+</html>
