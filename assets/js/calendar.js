@@ -288,12 +288,12 @@ var PatsCalendar = (function () {
     return cells;
   }
 
+  function eventsOnSelectedDay() {
+    return events.filter(function (ev) { return eventCoversDay(ev, selected); });
+  }
+
   function paintList() {
-    var dayEvents = events.filter(function (ev) { return eventCoversDay(ev, selected); });
-    if (!dayEvents.length) {
-      return [PATS.el('div', { class: 'cal-empty', text: '這天還沒有行程' })];
-    }
-    return dayEvents.map(function (ev) {
+    return eventsOnSelectedDay().map(function (ev) {
       return PATS.el('button', {
         class: 'cal-item',
         type: 'button',
@@ -356,18 +356,16 @@ var PatsCalendar = (function () {
         return PATS.el('span', { text: label });
       })),
       PATS.el('div', { class: 'cal-grid' }, paintGrid()),
-      PATS.el('div', { class: 'cal-day-head' }, [
-        PATS.el('h3', { text: dayTitle(selected) }),
-        PATS.el('button', {
-          class: 'btn btn-ghost',
-          type: 'button',
-          text: '新增這天',
-          onclick: function () { openEditor(null); }
-        })
-      ]),
       loading
         ? PATS.el('div', { class: 'cal-status', text: '載入行程中…' })
-        : PATS.el('div', { class: 'cal-list' }, paintList())
+        : (eventsOnSelectedDay().length
+          ? PATS.el('div', { class: 'cal-day-block' }, [
+              PATS.el('div', { class: 'cal-day-head' }, [
+                PATS.el('h3', { text: dayTitle(selected) })
+              ]),
+              PATS.el('div', { class: 'cal-list' }, paintList())
+            ])
+          : null)
     ]));
   }
 
